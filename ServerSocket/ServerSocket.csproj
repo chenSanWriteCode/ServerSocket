@@ -56,6 +56,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\DelegateCollection\DelegateCollectionImpl.cs" />
     <Compile Include="Service\DelegateCollection\UIDeletegate.cs" />
     <Compile Include="Service\SocketServicesBase.cs" />
     <Compile Include="Service\TCPSocket\Entity\GlobalVariable.cs" />

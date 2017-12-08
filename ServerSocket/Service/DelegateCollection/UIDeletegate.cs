@@ -12,6 +12,6 @@ namespace ServerSocket.Service.DelegateCollection
 
         public delegate void ChangeControlWithList<T>(List<T> list);
 
-
+        public delegate void ChangeControl();
     }
 }

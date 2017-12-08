@@ -15,9 +15,6 @@ namespace ServerSocket.Service
     /// </summary>
     public class SocketServicesBase
     {
-        public ChangeControlWithStr stringMsg;
-
-        public ChangeControlWithList<string> nameList;
         /// <summary>
         /// 最大连接socket数
         /// </summary>
@@ -31,21 +28,6 @@ namespace ServerSocket.Service
         {
             
         }
-        /// <summary>
-        /// 用委托将msg返回
-        /// </summary>
-        /// <param name="msg"></param>
-        public void returnStringMsg(string msg)
-        {
-            stringMsg?.BeginInvoke(msg, null, null);
-        }
-        /// <summary>
-        /// 用委托将用户列表返回
-        /// </summary>
-        /// <param name="names"></param>
-        public void returnNameList(List<string> names)
-        {
-            nameList?.BeginInvoke(names, null, null);
-        }
+       
     }
 }

@@ -36,24 +36,24 @@ namespace ServerSocket.Service.TCPSocket.Services
         /// <param name="listener"></param>
         public override void startSocketListen(object listener)
         {
-            stringMsg("kaishijianting");
+            listenFlag = true;
             //测试delegate  开始监听
-            if (stringMsg!=null)
-            {
-                //appendRichTB.BeginInvoke("开始监听", null, null);
-            }
+            DelegateCollectionImpl.returnStringMsg("开始监听");
             TcpListener TcpListener = (TcpListener)listener;
             while (listenFlag)
             {
                 try
                 {
+                    ServerClient serverClient1 = new ServerClient();
+                    Thread thread1 = new Thread(new ThreadStart(serverClient1.returnMsg));
+                    thread1.Start();
                     if (TcpListener.Pending())
                     {
                         Socket socket = TcpListener.AcceptSocket();
                         if (GlobalVariable.tcpClients.Count > MAX_NUM)
                         {
-                            //TODO:通过委托对form中richTextbox添加注释  “超过最大连接数”
-
+                            //DONE:通过委托对form中richTextbox添加注释  “超过最大连接数”
+                            DelegateCollectionImpl.returnStringMsg("超过最大连接数，连接失败");
                             //DONE: 给socket发信息， “超过最大连接数” 并关闭socket
                             ServerClient serverClient = new ServerClient(socket);
                             serverClient.sendErrMsg(socket, "超过最大连接数");
@@ -71,9 +71,8 @@ namespace ServerSocket.Service.TCPSocket.Services
                 catch (Exception err)
                 {
                     listenFlag = false;
-                    //TODO: 通过委托对richTextbox添加注释 “err”,并修改监听按钮
-
-                    //TODO: 对所有socket发通知 监听异常  停止 （貌似不需要发消息）
+                    //Done: 通过委托对richTextbox添加注释 “err”,并修改监听按钮
+                    DelegateCollectionImpl.returnStringErrMsg("出现异常" + err.Message);
                 }
                 Thread.Sleep(200);
             }

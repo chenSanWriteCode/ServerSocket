@@ -41,6 +41,10 @@ namespace ServerSocket
             btn_listen.Tag = ServerSocketSatus.StopListen;
 
             serverSocket.Max_num = int.Parse(tb_maxNum.Text);
+
+            DelegateCollectionImpl.stringMsg = new UIDeletegate.ChangeControlWithStr(appendRTBServerContent);
+            DelegateCollectionImpl.nameList = new UIDeletegate.ChangeControlWithList<string>(refreshLBUsers);
+            DelegateCollectionImpl.stringErrMsg = new UIDeletegate.ChangeControlWithStr(appendRTBServerErrContent);
         }
         /// <summary>
         /// 监听与停止监听
@@ -75,10 +79,7 @@ namespace ServerSocket
                     btn_listen.Tag = ServerSocketSatus.Listen;
                     btn_listen.Text = "停止";
                     RTB_serverContext.AppendText("Socket服务器已经启动，正在监听" + ServerIP + " 端口号：" + ServerPort + "\n");
-
                     socketServices = new TCPScoketServices(serverSocket.Max_num);
-                    socketServices.stringMsg = new UIDeletegate.ChangeControlWithStr(appendRTBServerContent);
-                    socketServices.nameList = new UIDeletegate.ChangeControlWithList<string>(refreshLBUsers);
                     Thread listenThread = new Thread(new ParameterizedThreadStart(socketServices.startSocketListen));
                     listenThread.IsBackground = true;
                     listenThread.Start(Listener);
@@ -100,8 +101,7 @@ namespace ServerSocket
         {
             if (RTB_serverContext.InvokeRequired)
             {
-                BeginInvoke(this.socketServices.stringMsg, new object[] { msg });
-                //RTB_serverContext.AppendText(msg + "\n");
+                BeginInvoke(DelegateCollectionImpl.stringMsg, new object[] { msg });
             }
             else
             {
@@ -116,7 +116,32 @@ namespace ServerSocket
         private void refreshLBUsers(List<string> nameList)
         {
             nameList.Insert(0, "所有用户");
-            lb_users.DataSource = nameList;
+            if (lb_users.InvokeRequired)
+            {
+                BeginInvoke(DelegateCollectionImpl.nameList, new object[] { nameList });
+            }
+            else
+            {
+                lb_users.DataSource = nameList;
+            }
+        }
+        /// <summary>
+        /// 在rtb_serverContent上追加异常内容，并修改监听按钮
+        /// </summary>
+        /// <param name="msg"></param>
+        private void appendRTBServerErrContent(string msg)
+        {
+            if (RTB_serverContext.InvokeRequired)
+            {
+                BeginInvoke(DelegateCollectionImpl.stringErrMsg, new object[] { msg });
+            }
+            else
+            {
+                this.RTB_serverContext.AppendText(msg + "\n");
+                this.btn_listen.Text = "监听";
+                this.btn_listen.Tag = ServerSocketSatus.StopListen;
+            }
+
         }
     }
 

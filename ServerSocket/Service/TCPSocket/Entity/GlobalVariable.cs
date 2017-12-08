@@ -18,7 +18,7 @@ namespace ServerSocket.Service.TCPSocket.Entity
         /// 获取所有用户，以逗号分割
         /// </summary>
         /// <returns></returns>
-        public static string getClientList()
+        public static string getClientStr()
         {
             return string.Join(",", tcpClients.Keys.ToArray());
         }

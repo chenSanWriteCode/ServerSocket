@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using ServerSocket.Service.DelegateCollection;
 using ServerSocket.Service.TCPSocket.Entity;
 
 namespace ServerSocket.Service.TCPSocket.Services
@@ -25,6 +23,11 @@ namespace ServerSocket.Service.TCPSocket.Services
         /// 用户手动可停止
         /// </summary>
         private bool serverRunFlag = true;
+
+        public ServerClient()
+        {
+
+        }
         /// <summary>
         /// 连接状态
         /// </summary>
@@ -129,12 +132,15 @@ namespace ServerSocket.Service.TCPSocket.Services
                 lock (locker)
                 {
                     GlobalVariable.tcpClients.Add(name, currentSocket);
-                    string msg = "LIST|" + GlobalVariable.getClientList();
+                    string msg = "LIST|" + GlobalVariable.getClientStr();
                     //遍历 向所有用户刷新用户列表
                     foreach (var item in GlobalVariable.tcpClients)
                     {
                         sendMsg(item.Value, msg);
                     }
+                    DelegateCollectionImpl.returnNameList(GlobalVariable.tcpClients.Keys.ToList());
+                    this.name = commands[1];
+                    GlobalVariable.tcpClients.Add(this.name, currentSocket);
                 }
                 status = true;
             }
@@ -145,8 +151,9 @@ namespace ServerSocket.Service.TCPSocket.Services
         /// <param name="commands"></param>
         private void list(string[] commands)
         {
-            string msg = "LIST|" + GlobalVariable.getClientList();
+            string msg = "LIST|" + GlobalVariable.getClientStr();
             sendMsg(this.currentSocket,msg);
+            DelegateCollectionImpl.returnNameList(GlobalVariable.tcpClients.Keys.ToList());
         }
         /// <summary>
         /// 向所有用户发消息
@@ -159,6 +166,7 @@ namespace ServerSocket.Service.TCPSocket.Services
             {
                 sendMsg(item.Value, "CONT|"+item.Key+ "|"+commands[2]);
             }
+            DelegateCollectionImpl.returnStringMsg(this.name + ": " + commands[2]);
         }
         /// <summary>
         /// 单发消息
@@ -193,12 +201,13 @@ namespace ServerSocket.Service.TCPSocket.Services
             lock (locker)
             {
                 GlobalVariable.tcpClients.Remove(commands[1]);
-                string msg = "LIST|" + GlobalVariable.getClientList();
+                string msg = "LIST|" + GlobalVariable.getClientStr();
                 //遍历 向所有用户刷新用户列表
                 foreach (var item in GlobalVariable.tcpClients)
                 {
                     sendMsg(item.Value, msg);
                 }
+                DelegateCollectionImpl.returnNameList(GlobalVariable.tcpClients.Keys.ToList());
             }
             this.currentSocket.Close();
             Thread.CurrentThread.Abort();
@@ -224,5 +233,9 @@ namespace ServerSocket.Service.TCPSocket.Services
             sendMsg(socket, "ERR|" + msg);
         }
         
+        public void returnMsg()
+        {
+            DelegateCollectionImpl.returnStringMsg("测试静态委托");
+        }
     }
 }
