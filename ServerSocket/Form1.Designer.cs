@@ -37,8 +37,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.tb_maxNum = new System.Windows.Forms.TextBox();
             this.lb_users = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.btn_send = new System.Windows.Forms.Button();
+            this.rtb_send = new System.Windows.Forms.RichTextBox();
+            this.btn_refresh = new System.Windows.Forms.Button();
+            this.btn_getOut = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -93,7 +95,7 @@
             // 
             this.RTB_serverContext.Location = new System.Drawing.Point(264, 56);
             this.RTB_serverContext.Name = "RTB_serverContext";
-            this.RTB_serverContext.Size = new System.Drawing.Size(466, 282);
+            this.RTB_serverContext.Size = new System.Drawing.Size(466, 250);
             this.RTB_serverContext.TabIndex = 4;
             this.RTB_serverContext.Text = "";
             // 
@@ -125,23 +127,43 @@
             this.lb_users.Size = new System.Drawing.Size(238, 352);
             this.lb_users.TabIndex = 5;
             // 
-            // button1
+            // btn_send
             // 
-            this.button1.Location = new System.Drawing.Point(152, 56);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "监听";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.btn_listen_Click);
+            this.btn_send.Location = new System.Drawing.Point(655, 312);
+            this.btn_send.Name = "btn_send";
+            this.btn_send.Size = new System.Drawing.Size(75, 23);
+            this.btn_send.TabIndex = 3;
+            this.btn_send.Text = "发送";
+            this.btn_send.UseVisualStyleBackColor = true;
+            this.btn_send.Click += new System.EventHandler(this.btn_send_Click);
             // 
-            // richTextBox1
+            // rtb_send
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(264, 344);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(466, 100);
-            this.richTextBox1.TabIndex = 4;
-            this.richTextBox1.Text = "";
+            this.rtb_send.Location = new System.Drawing.Point(264, 344);
+            this.rtb_send.Name = "rtb_send";
+            this.rtb_send.Size = new System.Drawing.Size(466, 100);
+            this.rtb_send.TabIndex = 4;
+            this.rtb_send.Text = "";
+            // 
+            // btn_refresh
+            // 
+            this.btn_refresh.Location = new System.Drawing.Point(93, 56);
+            this.btn_refresh.Name = "btn_refresh";
+            this.btn_refresh.Size = new System.Drawing.Size(75, 23);
+            this.btn_refresh.TabIndex = 3;
+            this.btn_refresh.Text = "刷新";
+            this.btn_refresh.UseVisualStyleBackColor = true;
+            this.btn_refresh.Click += new System.EventHandler(this.btn_refresh_Click);
+            // 
+            // btn_getOut
+            // 
+            this.btn_getOut.Location = new System.Drawing.Point(175, 56);
+            this.btn_getOut.Name = "btn_getOut";
+            this.btn_getOut.Size = new System.Drawing.Size(75, 23);
+            this.btn_getOut.TabIndex = 3;
+            this.btn_getOut.Text = "踢人";
+            this.btn_getOut.UseVisualStyleBackColor = true;
+            this.btn_getOut.Click += new System.EventHandler(this.btn_getOut_Click);
             // 
             // Form1
             // 
@@ -149,9 +171,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(742, 456);
             this.Controls.Add(this.lb_users);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.rtb_send);
             this.Controls.Add(this.RTB_serverContext);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btn_send);
+            this.Controls.Add(this.btn_getOut);
+            this.Controls.Add(this.btn_refresh);
             this.Controls.Add(this.btn_listen);
             this.Controls.Add(this.tb_maxNum);
             this.Controls.Add(this.tb_serverPort);
@@ -177,8 +201,10 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox tb_maxNum;
         private System.Windows.Forms.ListBox lb_users;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Button btn_send;
+        private System.Windows.Forms.RichTextBox rtb_send;
+        private System.Windows.Forms.Button btn_refresh;
+        private System.Windows.Forms.Button btn_getOut;
     }
 }
 

@@ -72,11 +72,12 @@ namespace ServerSocket.Service.TCPSocket.Services
         /// 解析收到的数据
         /// </summary>
         /// <param name="commands"></param>
-        private void decodeCommands(string[] commands,ref bool status)
+        /// <param name="status">登录状态</param>
+        internal  void decodeCommands(string[] commands,ref bool status)
         {
             if (status==false)
             {
-                if ((COMMAND)(Convert.ToInt32(commands[0]))== COMMAND.CONN)
+                if ((TOSERVERCOMMAND)Enum.Parse(typeof(TOSERVERCOMMAND), commands[0]) == TOSERVERCOMMAND.CONN)
                 {
                     conn(commands,ref status);
                 }
@@ -89,19 +90,19 @@ namespace ServerSocket.Service.TCPSocket.Services
             {
                 if (commands != null)
                 {
-                    COMMAND com = (COMMAND)(Convert.ToInt32(commands[0]));
-                    switch (com)
+                    TOSERVERCOMMAND cmd = (TOSERVERCOMMAND)Enum.Parse(typeof(TOSERVERCOMMAND), commands[0]);
+                    switch (cmd)
                     {
-                        case COMMAND.LIST:
+                        case TOSERVERCOMMAND.LIST:
                             list(commands);
                             break;
-                        case COMMAND.PUB:
+                        case TOSERVERCOMMAND.PUB:
                             pub(commands);
                             break;
-                        case COMMAND.PRI:
+                        case TOSERVERCOMMAND.PRI:
                             pri(commands);
                             break;
-                        case COMMAND.EXIT:
+                        case TOSERVERCOMMAND.EXIT:
                             exit(commands);
                             break;
                         default:
@@ -140,7 +141,6 @@ namespace ServerSocket.Service.TCPSocket.Services
                     }
                     DelegateCollectionImpl.returnNameList(GlobalVariable.tcpClients.Keys.ToList());
                     this.name = commands[1];
-                    GlobalVariable.tcpClients.Add(this.name, currentSocket);
                 }
                 status = true;
             }
@@ -153,7 +153,7 @@ namespace ServerSocket.Service.TCPSocket.Services
         {
             string msg = "LIST|" + GlobalVariable.getClientStr();
             sendMsg(this.currentSocket,msg);
-            DelegateCollectionImpl.returnNameList(GlobalVariable.tcpClients.Keys.ToList());
+            DelegateCollectionImpl.returnNameList(GlobalVariable. getClisentList());
         }
         /// <summary>
         /// 向所有用户发消息
@@ -219,8 +219,11 @@ namespace ServerSocket.Service.TCPSocket.Services
         /// <param name="msg"></param>
         private  void sendMsg(Socket socket,string msg)
         {
-            byte[] content = System.Text.Encoding.Default.GetBytes(msg);
-            socket.Send(content);
+            if (socket!=null)
+            {
+                byte[] content = System.Text.Encoding.Default.GetBytes(msg);
+                socket.Send(content);
+            }
         }
 
         /// <summary>
@@ -230,12 +233,7 @@ namespace ServerSocket.Service.TCPSocket.Services
         /// <param name="msg"></param>
         public void sendErrMsg(Socket socket, string msg)
         {
-            sendMsg(socket, "ERR|" + msg);
-        }
-        
-        public void returnMsg()
-        {
-            DelegateCollectionImpl.returnStringMsg("测试静态委托");
+            sendMsg(socket, TOSERVERCOMMAND.ERR.ToString()+"|" + msg);
         }
     }
 }

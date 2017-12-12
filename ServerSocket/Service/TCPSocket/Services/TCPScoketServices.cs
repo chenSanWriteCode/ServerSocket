@@ -16,12 +16,15 @@ namespace ServerSocket.Service.TCPSocket.Services
     public class TCPScoketServices:SocketServicesBase
     {
         /// <summary>
-        /// 监听flag
+        /// 监听flag,控制监听循环
         /// true 可以监听
         /// false 不可监听
         /// </summary>
         private bool listenFlag = true;
-
+        /// <summary>
+        /// socket 内部处理类
+        /// </summary>
+        private ServerClient serverClient=null;
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -44,9 +47,6 @@ namespace ServerSocket.Service.TCPSocket.Services
             {
                 try
                 {
-                    ServerClient serverClient1 = new ServerClient();
-                    Thread thread1 = new Thread(new ThreadStart(serverClient1.returnMsg));
-                    thread1.Start();
                     if (TcpListener.Pending())
                     {
                         Socket socket = TcpListener.AcceptSocket();
@@ -55,14 +55,14 @@ namespace ServerSocket.Service.TCPSocket.Services
                             //DONE:通过委托对form中richTextbox添加注释  “超过最大连接数”
                             DelegateCollectionImpl.returnStringMsg("超过最大连接数，连接失败");
                             //DONE: 给socket发信息， “超过最大连接数” 并关闭socket
-                            ServerClient serverClient = new ServerClient(socket);
+                            serverClient = new ServerClient(socket);
                             serverClient.sendErrMsg(socket, "超过最大连接数");
                             socket.Close();
                         }
                         else
                         {
                             //DONE: 开启一个新线程
-                            ServerClient serverClient = new ServerClient(socket);
+                            serverClient = new ServerClient(socket);
                             Thread serverThread = new Thread(new ThreadStart(serverClient.runServer));
                             serverThread.Start();
                         }
@@ -75,6 +75,40 @@ namespace ServerSocket.Service.TCPSocket.Services
                     DelegateCollectionImpl.returnStringErrMsg("出现异常" + err.Message);
                 }
                 Thread.Sleep(200);
+            }
+        }
+
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="msg"></param>
+        public override void sendMessage(TOSERVERCOMMAND command, string senderName, string message, string receiverName)
+        {
+            base.sendMessage(command, senderName, message, receiverName);
+            //if (serverClient==null)
+            //{
+            //    DelegateCollectionImpl.returnStringErrMsg("未打开监听");
+            //    return;
+            //}
+            string[] commands = msg.ToString().Split(new char[] { '|' });
+            bool status = true;
+            serverClient.decodeCommands(commands, ref status);
+        }
+
+        public override void getOut(string clientName)
+        {
+            Socket clientSocket;
+            if (GlobalVariable.tcpClients.TryGetValue(clientName,out clientSocket))
+            {
+                serverClient.sendErrMsg(clientSocket,"您已被强制下线");
+                base.sendMessage(TOSERVERCOMMAND.EXIT);
+                string[] commands = msg.ToString().Split(new char[] { '|' });
+                bool status = true;
+                serverClient.decodeCommands(commands, ref status);
+            }
+            else
+            {
+                DelegateCollectionImpl.returnStringMsg("用户已下线");
             }
         }
     }

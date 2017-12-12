@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using ServerSocket.Entity;
 using ServerSocket.Service;
 using ServerSocket.Service.DelegateCollection;
+using ServerSocket.Service.TCPSocket.Entity;
 using ServerSocket.Service.TCPSocket.Services;
 
 namespace ServerSocket
@@ -115,14 +117,29 @@ namespace ServerSocket
         /// <param name="nameList"></param>
         private void refreshLBUsers(List<string> nameList)
         {
-            nameList.Insert(0, "所有用户");
+            
             if (lb_users.InvokeRequired)
             {
                 BeginInvoke(DelegateCollectionImpl.nameList, new object[] { nameList });
             }
             else
             {
+                nameList.Insert(0, "所有用户");
+                string oldName="";
+                if (lb_users.SelectedItem!=null)
+                {
+                    oldName = lb_users.SelectedItem.ToString();
+                }
                 lb_users.DataSource = nameList;
+                if (nameList.Contains(oldName))
+                {
+                    lb_users.SelectedItem = oldName;
+                }
+                else
+                {
+                    lb_users.SelectedIndex = 1;
+                }
+                
             }
         }
         /// <summary>
@@ -142,6 +159,66 @@ namespace ServerSocket
                 this.btn_listen.Tag = ServerSocketSatus.StopListen;
             }
 
+        }
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_send_Click(object sender, EventArgs e)
+        {
+            if (socketServices==null)
+            {
+                MessageBox.Show("服务器未开始监听");
+                return;
+            }
+            if (lb_users!=null)
+            {
+                if (lb_users.SelectedIndex==0)
+                {
+                    //向所有人发送消息
+                    socketServices.sendMessage(TOSERVERCOMMAND.PUB, "SERVER", rtb_send.Text);
+                }
+                else
+                {
+                    //单人发送
+                    string receiveName = lb_users.SelectedItem.ToString();
+                    socketServices.sendMessage(TOSERVERCOMMAND.PRI, "SERVER", rtb_send.Text,receiveName);
+                }
+            }
+            else
+            {
+                MessageBox.Show("没有用户在线");
+            }
+        }
+        /// <summary>
+        /// 刷新列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_refresh_Click(object sender, EventArgs e)
+        {
+            if (socketServices == null)
+            {
+                MessageBox.Show("服务器未开始监听");
+                return;
+            }
+            lb_users.DataSource = GlobalVariable.getClisentList();
+        }
+        /// <summary>
+        /// 踢人
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_getOut_Click(object sender, EventArgs e)
+        {
+            if (socketServices == null)
+            {
+                MessageBox.Show("服务器未开始监听");
+                return;
+            }
+            string receiveName = lb_users.SelectedItem.ToString();
+            socketServices.getOut(receiveName);
         }
     }
 
